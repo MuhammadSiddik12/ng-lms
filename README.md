@@ -63,27 +63,30 @@ Built for hackathon speed with a demo-ready seed and a complete student → ment
 
 ### Prerequisites
 - Node.js 20+
-- Docker (for Postgres) **or** an existing PostgreSQL instance
+- Local PostgreSQL running
 
 ### 1. Database
 
-**Option A — Docker (recommended defaults)**
+Create a database (example):
 
 ```bash
-docker compose up -d
+createdb ng_lms
+# or via psql:
+# CREATE DATABASE ng_lms;
 ```
 
-Postgres is exposed on host port **5435** (`nglms` / `nglms` / db `nglms`).
+Copy env and set your Postgres credentials:
 
-**Option B — Your own Postgres**
-
-Point `backend/.env` at your instance (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`).
+```bash
+cd backend
+cp .env.example .env
+# edit DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+```
 
 ### 2. Backend
 
 ```bash
 cd backend
-cp .env.example .env   # edit if not using Docker defaults
 npm install
 npm run dev
 ```
@@ -125,7 +128,7 @@ App: http://localhost:5173
 | Variable | Purpose | Source |
 |----------|---------|--------|
 | `PORT` | API port | Default `4000` |
-| `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USER` / `DB_PASSWORD` | Postgres connection | Docker compose or your DB |
+| `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USER` / `DB_PASSWORD` | Local Postgres connection | Your Postgres instance |
 | `JWT_SECRET` | Sign access tokens | Generate a long random string |
 | `JWT_EXPIRES_IN` | Token lifetime | e.g. `7d` |
 | `CORS_ORIGIN` | Allowed frontend origin | `http://localhost:5173` |
@@ -168,9 +171,7 @@ ng-hackathon/
 │   │   └── types/
 │   └── .env.example
 ├── docs/
-│   ├── API.md
-│   └── DEMO.md
-├── docker-compose.yml
+│   └── API.md
 └── README.md
 ```
 
@@ -292,11 +293,12 @@ Steps (high level):
 | Database | Managed Postgres | ₹1,500–8,000/mo |
 | Redis / workers | Cache & jobs | ₹1,000–4,000/mo |
 
-## Demo & judging
+## Demo path
 
-See **[docs/DEMO.md](./docs/DEMO.md)** for the full 3-minute script and judging strategy.
-
-**Fast path:** login student → show charts + recommendations → complete a lesson → switch to mentor → open that student.
+1. Login as `student@demo.com` / `Demo@12345`
+2. Show dashboard charts + recommendations
+3. Open a course → lesson → log time / mark complete
+4. Login as `mentor@demo.com` / `Demo@12345` → open that student
 
 ## Final technical review (self-score)
 
