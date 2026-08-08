@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: progresspulse-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: progresspulse
+      POSTGRES_PASSWORD: progresspulse
+      POSTGRES_DB: progresspulse
+    ports:
+      # Host 5435 avoids conflict with local Postgres services
+      - "5435:5432"
+    volumes:
+      - progresspulse_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U progresspulse -d progresspulse"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  progresspulse_pgdata:
