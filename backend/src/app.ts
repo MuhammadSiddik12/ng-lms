@@ -5,6 +5,7 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { env } from "./config/env";
 import { errorHandler } from "./middlewares/errorHandler";
+import authRoutes from "./routes/auth.routes";
 import healthRoutes from "./routes/health.routes";
 
 export function createApp() {
@@ -30,9 +31,9 @@ export function createApp() {
   );
 
   app.use("/api/health", healthRoutes);
+  app.use("/api/auth", authRoutes);
 
-  // Feature routes will be mounted in later milestones:
-  // /api/auth, /api/dashboard, /api/courses, /api/lessons, /api/activities, etc.
+  // Later milestones: /api/dashboard, /api/courses, /api/lessons, /api/activities
 
   app.use((_req, res) => {
     res.status(404).json({

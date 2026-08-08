@@ -46,6 +46,25 @@ npm run dev
 
 App: `http://localhost:5173`
 
+## Auth API
+
+| Method | Endpoint | Auth | Purpose |
+|--------|----------|------|---------|
+| POST | `/api/auth/register` | No | Register student or mentor |
+| POST | `/api/auth/login` | No | Login, returns JWT |
+| GET | `/api/auth/me` | Bearer JWT | Current user |
+
+```bash
+# Login
+curl -s -X POST http://localhost:4000/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"student@demo.com","password":"Demo@12345"}'
+
+# Current user
+curl -s http://localhost:4000/api/auth/me \
+  -H "Authorization: Bearer <token>"
+```
+
 ## Demo accounts (after seed)
 
 | Email | Password | Role |
@@ -75,7 +94,7 @@ ng-hackathon/
 
 - [x] M1 — Project setup
 - [x] M2 — Database models + seed
-- [ ] M3 — Authentication
+- [x] M3 — Authentication
 - [ ] M4 — Dashboard / lesson / activity APIs
 - [ ] M5 — Student dashboard UI + charts
 - [ ] M6 — Course/lesson flow
