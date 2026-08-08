@@ -1,12 +1,10 @@
-# NG LMS — Progressive Student Dashboard
+# NG LMS — Hackathon Brief Documentation
 
 **Project:** Progressive Student Dashboard (Full-Stack)  
 **Product name:** NG LMS  
 **Date:** 8 August 2026
 
-Full-stack student learning dashboard for tracking course progress, time spent, learning trends, adaptive next steps, and mentor oversight.
-
-Also see the hackathon brief: [HACKATHON.md](./HACKATHON.md)
+Full documentation (same content): [README.md](./README.md)
 
 ---
 
@@ -79,48 +77,31 @@ React (Vite) UI  ──REST + JWT──►  Express API
 ## 6. How to Run
 
 ### Prerequisites
-
 - Node.js 20+
 - Local PostgreSQL
 
-### 1. Database
-
-```bash
-createdb ng_lms
-```
-
-### 2. Backend
-
+### Backend
 ```bash
 cd backend
 cp .env.example .env
-# set DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+# set DB_* credentials for your Postgres
 npm install
 npm run dev
 ```
-
 - API: http://localhost:4000  
 - Health: http://localhost:4000/api/health  
 - Swagger: http://localhost:4000/api/docs  
 
-With `DB_SYNC=true` and `DB_SEED=true`, schema + demo data load on API boot.
-
-Re-seed:
-
-```bash
-cd backend && npm run seed
-```
-
-### 3. Frontend
-
+### Frontend
 ```bash
 cd frontend
 cp .env.example .env
 npm install
 npm run dev
 ```
-
 - App: http://localhost:5173  
+
+With `DB_SYNC=true` and `DB_SEED=true`, schema + demo data load on API boot.
 
 ---
 
@@ -194,71 +175,38 @@ Start → study with live timer → wrap-up question.
 
 ---
 
-## 10. Environment Variables
+## 10. Main APIs
 
-### Backend (`backend/.env`)
+| Method | Endpoint | Role |
+|--------|----------|------|
+| POST | `/api/auth/register`, `/api/auth/login` | Public |
+| GET | `/api/auth/me` | Authenticated |
+| GET | `/api/dashboard/summary`, `/timeseries`, `/distribution` | Student |
+| GET | `/api/courses`, `/api/courses/:id` | Authenticated |
+| GET/PATCH | `/api/lessons/:id`, `/api/lessons/:id/progress` | Student (progress) |
+| POST | `/api/activities` | Student |
+| GET | `/api/recommendations` | Student |
+| GET | `/api/export/progress.csv` | Student |
+| GET | `/api/mentor/students`, `/api/mentor/students/:id/dashboard` | Mentor |
 
-| Variable | Purpose |
-|----------|---------|
-| `PORT` | API port (default `4000`) |
-| `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USER` / `DB_PASSWORD` | PostgreSQL connection |
-| `JWT_SECRET` | JWT signing secret |
-| `JWT_EXPIRES_IN` | Token lifetime (e.g. `7d`) |
-| `CORS_ORIGIN` | Frontend origin (`http://localhost:5173`) |
-| `DB_SYNC` | Sync schema on boot (`true` for local demo) |
-| `DB_SEED` | Seed demo data if missing (`true` for local demo) |
-
-### Frontend (`frontend/.env`)
-
-| Variable | Purpose |
-|----------|---------|
-| `VITE_API_URL` | Backend URL (`http://localhost:4000`) |
+Full interactive docs: **http://localhost:4000/api/docs**
 
 ---
 
-## 11. Main APIs
-
-- Swagger UI: http://localhost:4000/api/docs  
-- OpenAPI JSON: http://localhost:4000/api/docs.json  
-
-1. `POST /api/auth/login` with `student@demo.com` / `Demo@12345`
-2. Click **Authorize** and paste the JWT
-3. Try protected endpoints
-
-| Method | Endpoint | Auth | Purpose |
-|--------|----------|------|---------|
-| POST | `/api/auth/register` | No | Register |
-| POST | `/api/auth/login` | No | Login |
-| GET | `/api/auth/me` | Yes | Current user |
-| GET | `/api/dashboard/summary` | Student | KPIs |
-| GET | `/api/dashboard/timeseries` | Student | Time series |
-| GET | `/api/dashboard/distribution` | Student | Donut data |
-| GET | `/api/courses` | Yes | Courses |
-| GET | `/api/courses/:id` | Yes | Course detail |
-| GET | `/api/lessons/:id` | Yes | Lesson detail |
-| PATCH | `/api/lessons/:id/progress` | Student | Update progress |
-| POST | `/api/activities` | Student | Log activity |
-| GET | `/api/recommendations` | Student | Next steps |
-| GET | `/api/export/progress.csv` | Student | CSV export |
-| GET | `/api/mentor/students` | Mentor | Student list |
-| GET | `/api/mentor/students/:id/dashboard` | Mentor | Student dashboard |
-
----
-
-## 12. Project Structure
+## 11. Project Structure
 
 ```text
 ng-hackathon/
 ├── backend/            Express + Sequelize API + Swagger
 ├── frontend/           React (Vite) student & mentor UI
 ├── docs/screenshots/   UI screenshots for submission
-├── HACKATHON.md        Hackathon brief
-└── README.md           Full documentation
+├── README.md           Full documentation
+└── HACKATHON.md        This brief
 ```
 
 ---
 
-## 13. Notes for Evaluators
+## 12. Notes for Evaluators
 
 - Seeded data is ready for immediate demo (no manual course creation needed)
 - Study time is measured by a live session timer and saved when the wrap-up question is submitted
