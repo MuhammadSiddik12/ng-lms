@@ -62,3 +62,62 @@ export interface DashboardDistribution {
   by: "status" | "category";
   segments: DistributionSegment[];
 }
+
+export type ProgressStatus = "not_started" | "in_progress" | "completed";
+
+export interface CourseListItem {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  enrolledAt?: string;
+  totalLessons: number;
+  completedLessons: number;
+  progressPercent: number;
+}
+
+export interface CourseLessonItem {
+  id: string;
+  title: string;
+  orderIndex: number;
+  durationMinutes: number;
+  status: ProgressStatus;
+  timeSpentSeconds: number;
+  completedAt: string | null;
+}
+
+export interface CourseDetail {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  totalLessons: number;
+  completedLessons: number;
+  progressPercent: number;
+  lessons: CourseLessonItem[];
+}
+
+export interface LessonDetail {
+  id: string;
+  title: string;
+  content: string;
+  orderIndex: number;
+  durationMinutes: number;
+  course: {
+    id: string;
+    title: string;
+    category: string;
+  } | null;
+  progress: {
+    status: ProgressStatus;
+    timeSpentSeconds: number;
+    completedAt: string | null;
+  };
+}
+
+export interface LessonProgressUpdate {
+  lessonId: string;
+  status: ProgressStatus;
+  timeSpentSeconds: number;
+  completedAt: string | null;
+}

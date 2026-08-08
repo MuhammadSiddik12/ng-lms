@@ -37,3 +37,8 @@ export async function apiPost<T>(url: string, body?: unknown) {
   const { data } = await api.post<ApiResponse<T>>(url, body);
   return data.data;
 }
+
+export async function apiPatch<T>(url: string, body?: unknown) {
+  const { data } = await api.patch<ApiResponse<T>>(url, body);
+  return data.data;
+}

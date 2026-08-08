@@ -165,7 +165,12 @@ export function DashboardPage() {
                 className={`flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between animate-fade-up animation-delay-${Math.min(index + 1, 3)}`}
               >
                 <div>
-                  <p className="font-medium">{course.title}</p>
+                  <Link
+                    to={`/courses/${course.id}`}
+                    className="font-medium transition hover:text-[var(--accent)]"
+                  >
+                    {course.title}
+                  </Link>
                   <p className="text-sm text-[var(--muted)]">
                     {course.category} · {course.completedLessons}/
                     {course.totalLessons} lessons ·{" "}

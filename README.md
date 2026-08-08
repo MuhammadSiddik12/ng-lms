@@ -105,6 +105,6 @@ ng-hackathon/
 - [x] M3 — Authentication
 - [x] M4 — Dashboard / lesson / activity APIs
 - [x] M5 — Student dashboard UI + charts
-- [ ] M6 — Course/lesson flow
+- [x] M6 — Course/lesson flow
 - [ ] M7 — Recommendations + CSV + mentor UI
 - [ ] M8 — Docs, polish, screenshots
