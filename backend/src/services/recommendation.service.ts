@@ -167,13 +167,18 @@ export async function getRecommendations(userId: string, role: string) {
 
   const completedCount = progress.filter((p) => p.status === "completed").length;
   if (completedCount >= 3) {
+    const nextOpen = lessons.find(
+      (l) => (progressByLesson.get(l.id)?.status ?? "not_started") !== "completed"
+    );
     recommendations.push({
       id: "celebrate",
       priority: "low",
       title: `You’ve completed ${completedCount} lessons`,
       reason: "Keep the streak going — consistency beats intensity.",
-      actionLabel: "View dashboard",
-      href: "/dashboard",
+      actionLabel: nextOpen ? "Continue next lesson" : "Browse courses",
+      href: nextOpen ? `/lessons/${nextOpen.id}` : "/courses",
+      lessonId: nextOpen?.id,
+      courseId: nextOpen?.courseId,
     });
   }
 
