@@ -104,7 +104,7 @@ ng-hackathon/
 - [x] M2 — Database models + seed
 - [x] M3 — Authentication
 - [x] M4 — Dashboard / lesson / activity APIs
-- [ ] M5 — Student dashboard UI + charts
+- [x] M5 — Student dashboard UI + charts
 - [ ] M6 — Course/lesson flow
 - [ ] M7 — Recommendations + CSV + mentor UI
 - [ ] M8 — Docs, polish, screenshots

@@ -52,4 +52,37 @@
     color: inherit;
     text-decoration: none;
   }
+
+  input,
+  select,
+  button {
+    font: inherit;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.55s ease-out both;
+}
+
+.animation-delay-1 {
+  animation-delay: 0.08s;
+}
+
+.animation-delay-2 {
+  animation-delay: 0.16s;
+}
+
+.animation-delay-3 {
+  animation-delay: 0.24s;
 }
