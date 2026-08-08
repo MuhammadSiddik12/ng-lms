@@ -121,3 +121,38 @@ export interface LessonProgressUpdate {
   timeSpentSeconds: number;
   completedAt: string | null;
 }
+
+export interface Recommendation {
+  id: string;
+  priority: "high" | "medium" | "low";
+  title: string;
+  reason: string;
+  actionLabel: string;
+  href: string;
+  courseId?: string;
+  lessonId?: string;
+}
+
+export interface MentorStudentSummary {
+  id: string;
+  name: string;
+  email: string;
+  assignedAt: string;
+  completedLessons: number;
+  totalLessons: number;
+  overallProgressPercent: number;
+  timeSpentSeconds: number;
+  enrolledCourses: number;
+  inProgressLessons: number;
+}
+
+export interface MentorStudentDashboard {
+  student: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  summary: DashboardSummary;
+  timeseries: DashboardTimeseries;
+  distribution: DashboardDistribution;
+}

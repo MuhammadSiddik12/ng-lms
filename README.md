@@ -61,6 +61,10 @@ App: `http://localhost:5173`
 | GET | `/api/lessons/:id` | Yes | Lesson detail |
 | PATCH | `/api/lessons/:id/progress` | Student | Update / complete lesson |
 | POST | `/api/activities` | Student | Log activity event |
+| GET | `/api/recommendations` | Student | Adaptive next-step recommendations |
+| GET | `/api/export/progress.csv` | Student | Download progress CSV |
+| GET | `/api/mentor/students` | Mentor | Assigned students + summaries |
+| GET | `/api/mentor/students/:id/dashboard` | Mentor | Student dashboard aggregates |
 
 ```bash
 # Login
@@ -106,5 +110,5 @@ ng-hackathon/
 - [x] M4 — Dashboard / lesson / activity APIs
 - [x] M5 — Student dashboard UI + charts
 - [x] M6 — Course/lesson flow
-- [ ] M7 — Recommendations + CSV + mentor UI
+- [x] M7 — Recommendations + CSV + mentor UI
 - [ ] M8 — Docs, polish, screenshots

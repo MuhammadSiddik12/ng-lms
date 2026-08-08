@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../config/database";
+import type { User } from "./User";
 
 export interface MentorStudentAttributes {
   id: string;
@@ -25,6 +26,7 @@ export class MentorStudent
   declare assignedAt: Date;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
+  declare student?: User;
 }
 
 MentorStudent.init(

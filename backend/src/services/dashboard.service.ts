@@ -8,16 +8,13 @@ import {
 } from "../models";
 import { ApiError } from "../utils/ApiError";
 
-async function assertStudent(userId: string, role: string) {
+function assertStudentRole(role: string) {
   if (role !== "student") {
     throw new ApiError(403, "Student dashboard is only available to students");
   }
-  return userId;
 }
 
-export async function getSummary(userId: string, role: string) {
-  await assertStudent(userId, role);
-
+export async function buildStudentSummary(userId: string) {
   const enrollments = await Enrollment.findAll({
     where: { userId },
     include: [{ model: Course, as: "course" }],
@@ -89,9 +86,7 @@ export async function getSummary(userId: string, role: string) {
   };
 }
 
-export async function getTimeseries(userId: string, role: string, days: number) {
-  await assertStudent(userId, role);
-
+export async function buildStudentTimeseries(userId: string, days: number) {
   const rows = await sequelize.query<{
     day: string;
     duration_seconds: string;
@@ -144,13 +139,10 @@ export async function getTimeseries(userId: string, role: string, days: number) 
   return { days, series };
 }
 
-export async function getDistribution(
+export async function buildStudentDistribution(
   userId: string,
-  role: string,
   by: "status" | "category"
 ) {
-  await assertStudent(userId, role);
-
   if (by === "status") {
     const rows = await sequelize.query<{ status: string; count: string }>(
       `
@@ -174,7 +166,7 @@ export async function getDistribution(
     }
 
     return {
-      by: "status",
+      by: "status" as const,
       segments: [
         { key: "completed", label: "Completed", value: counts.completed },
         { key: "in_progress", label: "In progress", value: counts.in_progress },
@@ -197,11 +189,30 @@ export async function getDistribution(
   );
 
   return {
-    by: "category",
+    by: "category" as const,
     segments: rows.map((r) => ({
       key: r.category,
       label: r.category,
       value: Number(r.value),
     })),
   };
+}
+
+export async function getSummary(userId: string, role: string) {
+  assertStudentRole(role);
+  return buildStudentSummary(userId);
+}
+
+export async function getTimeseries(userId: string, role: string, days: number) {
+  assertStudentRole(role);
+  return buildStudentTimeseries(userId, days);
+}
+
+export async function getDistribution(
+  userId: string,
+  role: string,
+  by: "status" | "category"
+) {
+  assertStudentRole(role);
+  return buildStudentDistribution(userId, by);
 }

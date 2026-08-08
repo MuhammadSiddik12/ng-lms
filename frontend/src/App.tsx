@@ -8,7 +8,8 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { LandingPage } from "./pages/LandingPage";
 import { LessonDetailPage } from "./pages/LessonDetailPage";
 import { LoginPage } from "./pages/LoginPage";
-import { MentorPlaceholderPage } from "./pages/MentorPlaceholderPage";
+import { MentorPage } from "./pages/MentorPage";
+import { MentorStudentPage } from "./pages/MentorStudentPage";
 import { RegisterPage } from "./pages/RegisterPage";
 
 export default function App() {
@@ -63,7 +64,15 @@ export default function App() {
               path="/mentor"
               element={
                 <ProtectedRoute roles={["mentor"]}>
-                  <MentorPlaceholderPage />
+                  <MentorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mentor/students/:studentId"
+              element={
+                <ProtectedRoute roles={["mentor"]}>
+                  <MentorStudentPage />
                 </ProtectedRoute>
               }
             />

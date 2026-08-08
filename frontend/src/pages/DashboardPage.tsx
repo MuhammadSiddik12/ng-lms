@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { DistributionChart } from "../components/charts/DistributionChart";
 import { TrendChart } from "../components/charts/TrendChart";
+import { RecommendationList } from "../components/recommendations/RecommendationList";
 import { Skeleton } from "../components/ui/Skeleton";
 import { useAuth } from "../context/AuthContext";
 import { apiGet, getErrorMessage } from "../lib/api";
+import { downloadProgressCsv } from "../lib/download";
 import { formatMinutes } from "../lib/format";
 import type {
   DashboardDistribution,
   DashboardSummary,
   DashboardTimeseries,
+  Recommendation,
 } from "../types/api";
 
 export function DashboardPage() {
@@ -18,8 +21,11 @@ export function DashboardPage() {
   const [timeseries, setTimeseries] = useState<DashboardTimeseries | null>(null);
   const [distribution, setDistribution] =
     useState<DashboardDistribution | null>(null);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -27,15 +33,17 @@ export function DashboardPage() {
       setLoading(true);
       setError("");
       try {
-        const [summaryData, seriesData, distData] = await Promise.all([
+        const [summaryData, seriesData, distData, recData] = await Promise.all([
           apiGet<DashboardSummary>("/api/dashboard/summary"),
           apiGet<DashboardTimeseries>("/api/dashboard/timeseries?days=14"),
           apiGet<DashboardDistribution>("/api/dashboard/distribution?by=status"),
+          apiGet<{ recommendations: Recommendation[] }>("/api/recommendations"),
         ]);
         if (!active) return;
         setSummary(summaryData);
         setTimeseries(seriesData);
         setDistribution(distData);
+        setRecommendations(recData.recommendations);
       } catch (err) {
         if (active) setError(getErrorMessage(err, "Failed to load dashboard"));
       } finally {
@@ -47,16 +55,44 @@ export function DashboardPage() {
     };
   }, []);
 
+  async function onExportCsv() {
+    setExporting(true);
+    setExportError("");
+    try {
+      await downloadProgressCsv();
+    } catch (err) {
+      setExportError(getErrorMessage(err, "CSV export failed"));
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <main className="mx-auto max-w-6xl px-6 py-8 md:py-10">
-      <div className="mb-8 animate-fade-up">
-        <p className="text-sm text-[var(--muted)]">Welcome back</p>
-        <h1 className="mt-1 text-3xl md:text-4xl">{user?.name}</h1>
-        <p className="mt-2 max-w-2xl text-[var(--muted)]">
-          Your learning pulse — completed lessons, time invested, and progress across
-          courses.
-        </p>
+      <div className="mb-8 flex flex-col gap-4 animate-fade-up sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm text-[var(--muted)]">Welcome back</p>
+          <h1 className="mt-1 text-3xl md:text-4xl">{user?.name}</h1>
+          <p className="mt-2 max-w-2xl text-[var(--muted)]">
+            Your learning pulse — completed lessons, time invested, and progress across
+            courses.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onExportCsv}
+          disabled={exporting}
+          className="shrink-0 rounded-lg border border-white/15 px-4 py-2 text-sm text-[var(--ink)] transition hover:border-white/30 disabled:opacity-60"
+        >
+          {exporting ? "Exporting…" : "Export CSV"}
+        </button>
       </div>
+
+      {exportError && (
+        <p className="mb-4 rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-4 py-3 text-sm text-[var(--danger)]">
+          {exportError}
+        </p>
+      )}
 
       {error && (
         <p className="mb-6 rounded-lg border border-[var(--danger)]/30 bg-[var(--danger)]/10 px-4 py-3 text-sm text-[var(--danger)]">
@@ -96,6 +132,23 @@ export function DashboardPage() {
               delay="animation-delay-3"
             />
           </>
+        )}
+      </section>
+
+      <section className="mb-8 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <div className="mb-4">
+          <h2 className="text-xl">Next steps</h2>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            Adaptive recommendations based on your progress and activity
+          </p>
+        </div>
+        {loading ? (
+          <div className="space-y-3">
+            <Skeleton className="h-20" />
+            <Skeleton className="h-20" />
+          </div>
+        ) : (
+          <RecommendationList items={recommendations} />
         )}
       </section>
 

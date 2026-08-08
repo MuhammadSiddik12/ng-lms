@@ -9,8 +9,11 @@ import activityRoutes from "./routes/activity.routes";
 import authRoutes from "./routes/auth.routes";
 import courseRoutes from "./routes/course.routes";
 import dashboardRoutes from "./routes/dashboard.routes";
+import exportRoutes from "./routes/export.routes";
 import healthRoutes from "./routes/health.routes";
 import lessonRoutes from "./routes/lesson.routes";
+import mentorRoutes from "./routes/mentor.routes";
+import recommendationRoutes from "./routes/recommendation.routes";
 
 export function createApp() {
   const app = express();
@@ -40,6 +43,9 @@ export function createApp() {
   app.use("/api/courses", courseRoutes);
   app.use("/api/lessons", lessonRoutes);
   app.use("/api/activities", activityRoutes);
+  app.use("/api/recommendations", recommendationRoutes);
+  app.use("/api/export", exportRoutes);
+  app.use("/api/mentor", mentorRoutes);
 
   app.use((_req, res) => {
     res.status(404).json({
