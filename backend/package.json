@@ -8,7 +8,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "seed": "tsx src/seed.ts",
-    "db:sync": "tsx src/scripts/syncDb.ts"
+    "smoke": "bash scripts/smoke.sh"
   },
   "keywords": ["hackathon", "education", "dashboard"],
   "author": "",
