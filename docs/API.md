@@ -2,6 +2,9 @@
 
 Base URL (local): `http://localhost:4000`
 
+**Interactive docs (Swagger UI):** http://localhost:4000/api/docs  
+**OpenAPI JSON:** http://localhost:4000/api/docs.json
+
 ## Response format
 
 Success:

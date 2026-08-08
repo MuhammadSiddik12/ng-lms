@@ -176,7 +176,16 @@ ng-hackathon/
 
 ## API documentation
 
-Full reference with curl examples: **[docs/API.md](./docs/API.md)**
+Interactive Swagger UI (with Try it out):
+
+- **UI:** http://localhost:4000/api/docs  
+- **OpenAPI JSON:** http://localhost:4000/api/docs.json  
+
+1. Call `POST /api/auth/login` with `student@demo.com` / `Demo@12345`
+2. Click **Authorize** and paste `Bearer <token>` (or just the token)
+3. Try protected endpoints
+
+Markdown + curl reference: **[docs/API.md](./docs/API.md)**
 
 | Method | Endpoint | Auth | Purpose |
 |--------|----------|------|---------|

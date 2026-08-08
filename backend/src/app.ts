@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { env } from "./config/env";
+import { setupSwagger } from "./docs/swagger";
 import { errorHandler } from "./middlewares/errorHandler";
 import activityRoutes from "./routes/activity.routes";
 import authRoutes from "./routes/auth.routes";
@@ -18,7 +19,19 @@ import recommendationRoutes from "./routes/recommendation.routes";
 export function createApp() {
   const app = express();
 
-  app.use(helmet());
+  // Relax CSP enough for Swagger UI assets/inline styles
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          scriptSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", "data:", "validator.swagger.io"],
+        },
+      },
+    })
+  );
   app.use(
     cors({
       origin: env.CORS_ORIGIN,
@@ -36,6 +49,8 @@ export function createApp() {
       legacyHeaders: false,
     })
   );
+
+  setupSwagger(app);
 
   app.use("/api/health", healthRoutes);
   app.use("/api/auth", authRoutes);
