@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import { sequelize } from "../config/database";
+import type { Course } from "./Course";
 
 export interface EnrollmentAttributes {
   id: string;
@@ -25,6 +26,7 @@ export class Enrollment
   declare enrolledAt: Date;
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
+  declare course?: Course;
 }
 
 Enrollment.init(

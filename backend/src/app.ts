@@ -5,8 +5,12 @@ import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { env } from "./config/env";
 import { errorHandler } from "./middlewares/errorHandler";
+import activityRoutes from "./routes/activity.routes";
 import authRoutes from "./routes/auth.routes";
+import courseRoutes from "./routes/course.routes";
+import dashboardRoutes from "./routes/dashboard.routes";
 import healthRoutes from "./routes/health.routes";
+import lessonRoutes from "./routes/lesson.routes";
 
 export function createApp() {
   const app = express();
@@ -32,8 +36,10 @@ export function createApp() {
 
   app.use("/api/health", healthRoutes);
   app.use("/api/auth", authRoutes);
-
-  // Later milestones: /api/dashboard, /api/courses, /api/lessons, /api/activities
+  app.use("/api/dashboard", dashboardRoutes);
+  app.use("/api/courses", courseRoutes);
+  app.use("/api/lessons", lessonRoutes);
+  app.use("/api/activities", activityRoutes);
 
   app.use((_req, res) => {
     res.status(404).json({

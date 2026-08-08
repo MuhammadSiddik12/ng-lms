@@ -46,13 +46,21 @@ npm run dev
 
 App: `http://localhost:5173`
 
-## Auth API
+## API overview
 
 | Method | Endpoint | Auth | Purpose |
 |--------|----------|------|---------|
 | POST | `/api/auth/register` | No | Register student or mentor |
 | POST | `/api/auth/login` | No | Login, returns JWT |
 | GET | `/api/auth/me` | Bearer JWT | Current user |
+| GET | `/api/dashboard/summary` | Student | KPIs + per-course progress |
+| GET | `/api/dashboard/timeseries?days=14` | Student | Daily time-spent series |
+| GET | `/api/dashboard/distribution?by=status\|category` | Student | Donut chart segments |
+| GET | `/api/courses` | Yes | Enrolled courses (students) / all (mentors) |
+| GET | `/api/courses/:id` | Yes | Course + lessons + progress |
+| GET | `/api/lessons/:id` | Yes | Lesson detail |
+| PATCH | `/api/lessons/:id/progress` | Student | Update / complete lesson |
+| POST | `/api/activities` | Student | Log activity event |
 
 ```bash
 # Login
@@ -95,7 +103,7 @@ ng-hackathon/
 - [x] M1 — Project setup
 - [x] M2 — Database models + seed
 - [x] M3 — Authentication
-- [ ] M4 — Dashboard / lesson / activity APIs
+- [x] M4 — Dashboard / lesson / activity APIs
 - [ ] M5 — Student dashboard UI + charts
 - [ ] M6 — Course/lesson flow
 - [ ] M7 — Recommendations + CSV + mentor UI
