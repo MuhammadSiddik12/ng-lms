@@ -6,7 +6,7 @@ const router = Router();
 router.get("/", (_req, res) => {
   sendSuccess(res, {
     status: "ok",
-    service: "progresspulse-api",
+    service: "nglms-api",
     timestamp: new Date().toISOString(),
   });
 });

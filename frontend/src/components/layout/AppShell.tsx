@@ -15,7 +15,7 @@ export function AppShell() {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
           <Link to={user?.role === "mentor" ? "/mentor" : "/dashboard"} className="group">
             <span className="font-[family-name:var(--font-display)] text-xl tracking-tight">
-              ProgressPulse
+              NG LMS
             </span>
             <span className="ml-2 text-xs text-[var(--muted)] group-hover:text-[var(--accent)]">
               learning insights

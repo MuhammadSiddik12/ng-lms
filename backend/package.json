@@ -1,7 +1,7 @@
 {
-  "name": "progresspulse-backend",
+  "name": "nglms-backend",
   "version": "1.0.0",
-  "description": "ProgressPulse API — student progress dashboard",
+  "description": "NG LMS API — student progress dashboard",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",

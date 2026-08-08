@@ -26,8 +26,8 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const TOKEN_KEY = "pp_token";
-const USER_KEY = "pp_user";
+const TOKEN_KEY = "nglms_token";
+const USER_KEY = "nglms_user";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {

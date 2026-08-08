@@ -23,7 +23,7 @@ export function LandingPage() {
 
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-6 py-16">
         <p className="mb-4 animate-fade-up text-sm font-semibold tracking-[0.22em] text-[var(--accent)] uppercase">
-          ProgressPulse
+          NG LMS
         </p>
         <h1 className="max-w-3xl animate-fade-up animation-delay-1 text-4xl leading-[1.05] text-[var(--ink)] md:text-6xl">
           Track learning. See the trend. Know what to do next.

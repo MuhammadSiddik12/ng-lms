@@ -9,7 +9,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("pp_token");
+  const token = localStorage.getItem("nglms_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

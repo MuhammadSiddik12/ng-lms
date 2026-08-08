@@ -42,7 +42,7 @@ export function LoginPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-12">
       <Link to="/" className="mb-8 font-[family-name:var(--font-display)] text-2xl">
-        ProgressPulse
+        NG LMS
       </Link>
       <h1 className="text-3xl">Welcome back</h1>
       <p className="mt-2 text-[var(--muted)]">Sign in to view your learning insights.</p>

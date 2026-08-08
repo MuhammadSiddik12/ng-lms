@@ -1,4 +1,4 @@
-# ProgressPulse
+# NG LMS
 
 Full-stack progressive student dashboard for tracking course progress, time spent, learning trends, and mentor insights.
 
