@@ -146,6 +146,31 @@ export interface MentorStudentSummary {
   inProgressLessons: number;
 }
 
+export interface MentorCourseLessonDetail {
+  id: string;
+  title: string;
+  orderIndex: number;
+  durationMinutes: number;
+  status: ProgressStatus;
+  timeSpentSeconds: number;
+  completedAt: string | null;
+}
+
+export interface MentorCourseDetail {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  enrolledAt: string;
+  totalLessons: number;
+  completedLessons: number;
+  inProgressLessons: number;
+  notStartedLessons: number;
+  timeSpentSeconds: number;
+  progressPercent: number;
+  lessons: MentorCourseLessonDetail[];
+}
+
 export interface MentorStudentDashboard {
   student: {
     id: string;
@@ -155,4 +180,5 @@ export interface MentorStudentDashboard {
   summary: DashboardSummary;
   timeseries: DashboardTimeseries;
   distribution: DashboardDistribution;
+  courseDetails: MentorCourseDetail[];
 }

@@ -1,4 +1,11 @@
-import { MentorStudent, User } from "../models";
+import {
+  Course,
+  Enrollment,
+  Lesson,
+  LessonProgress,
+  MentorStudent,
+  User,
+} from "../models";
 import { ApiError } from "../utils/ApiError";
 import {
   buildStudentDistribution,
@@ -13,6 +20,82 @@ async function assertMentorAccess(mentorId: string, studentId: string) {
   if (!link) {
     throw new ApiError(403, "This student is not assigned to you");
   }
+}
+
+/** Per-course + per-lesson completion details for mentor review */
+export async function buildStudentCourseDetails(studentId: string) {
+  const enrollments = await Enrollment.findAll({
+    where: { userId: studentId },
+    include: [
+      {
+        model: Course,
+        as: "course",
+        include: [
+          {
+            model: Lesson,
+            as: "lessons",
+            separate: true,
+            order: [["orderIndex", "ASC"]],
+          },
+        ],
+      },
+    ],
+  });
+
+  const lessonIds = enrollments.flatMap(
+    (e) => e.course?.lessons?.map((l) => l.id) ?? []
+  );
+  const progressRecords =
+    lessonIds.length === 0
+      ? []
+      : await LessonProgress.findAll({
+          where: { userId: studentId, lessonId: lessonIds },
+        });
+  const progressMap = new Map(progressRecords.map((p) => [p.lessonId, p]));
+
+  return enrollments
+    .map((enrollment) => {
+      const course = enrollment.course;
+      if (!course) return null;
+
+      const lessons = (course.lessons ?? []).map((lesson) => {
+        const p = progressMap.get(lesson.id);
+        return {
+          id: lesson.id,
+          title: lesson.title,
+          orderIndex: lesson.orderIndex,
+          durationMinutes: lesson.durationMinutes,
+          status: p?.status ?? ("not_started" as const),
+          timeSpentSeconds: p?.timeSpentSeconds ?? 0,
+          completedAt: p?.completedAt ?? null,
+        };
+      });
+
+      const completedLessons = lessons.filter((l) => l.status === "completed").length;
+      const inProgressLessons = lessons.filter((l) => l.status === "in_progress").length;
+      const notStartedLessons = lessons.filter((l) => l.status === "not_started").length;
+      const timeSpentSeconds = lessons.reduce((sum, l) => sum + l.timeSpentSeconds, 0);
+
+      return {
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        category: course.category,
+        enrolledAt: enrollment.enrolledAt,
+        totalLessons: lessons.length,
+        completedLessons,
+        inProgressLessons,
+        notStartedLessons,
+        timeSpentSeconds,
+        progressPercent:
+          lessons.length === 0
+            ? 0
+            : Math.round((completedLessons / lessons.length) * 100),
+        lessons,
+      };
+    })
+    .filter((c): c is NonNullable<typeof c> => c !== null)
+    .sort((a, b) => a.title.localeCompare(b.title));
 }
 
 export async function listMentorStudents(mentorId: string, role: string) {
@@ -76,10 +159,11 @@ export async function getMentorStudentDashboard(
     throw new ApiError(404, "Student not found");
   }
 
-  const [summary, timeseries, distribution] = await Promise.all([
+  const [summary, timeseries, distribution, courseDetails] = await Promise.all([
     buildStudentSummary(studentId),
     buildStudentTimeseries(studentId, days),
     buildStudentDistribution(studentId, "status"),
+    buildStudentCourseDetails(studentId),
   ]);
 
   return {
@@ -91,5 +175,6 @@ export async function getMentorStudentDashboard(
     summary,
     timeseries,
     distribution,
+    courseDetails,
   };
 }

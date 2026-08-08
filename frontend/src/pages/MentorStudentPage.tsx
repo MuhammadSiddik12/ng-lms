@@ -3,15 +3,17 @@ import { Link, useParams } from "react-router-dom";
 import { DistributionChart } from "../components/charts/DistributionChart";
 import { TrendChart } from "../components/charts/TrendChart";
 import { Skeleton } from "../components/ui/Skeleton";
+import { StatusBadge } from "../components/ui/StatusBadge";
 import { apiGet, getErrorMessage } from "../lib/api";
 import { formatMinutes } from "../lib/format";
-import type { MentorStudentDashboard } from "../types/api";
+import type { MentorCourseDetail, MentorStudentDashboard } from "../types/api";
 
 export function MentorStudentPage() {
   const { studentId } = useParams<{ studentId: string }>();
   const [data, setData] = useState<MentorStudentDashboard | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [expandedCourseId, setExpandedCourseId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!studentId) return;
@@ -23,7 +25,14 @@ export function MentorStudentPage() {
         const result = await apiGet<MentorStudentDashboard>(
           `/api/mentor/students/${studentId}/dashboard?days=14`
         );
-        if (active) setData(result);
+        if (active) {
+          setData(result);
+          // Auto-expand first incomplete course for quick review
+          const firstOpen =
+            result.courseDetails.find((c) => c.progressPercent < 100) ??
+            result.courseDetails[0];
+          setExpandedCourseId(firstOpen?.id ?? null);
+        }
       } catch (err) {
         if (active) setError(getErrorMessage(err, "Failed to load student"));
       } finally {
@@ -91,6 +100,36 @@ export function MentorStudentPage() {
             />
           </section>
 
+          <section className="mb-8 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+            <div className="mb-5">
+              <h2 className="text-xl">Course completion details</h2>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                Expand a course to see every lesson status and time spent
+              </p>
+            </div>
+
+            {data.courseDetails.length === 0 ? (
+              <p className="py-8 text-center text-sm text-[var(--muted)]">
+                This student is not enrolled in any courses yet.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {data.courseDetails.map((course) => (
+                  <CourseDetailCard
+                    key={course.id}
+                    course={course}
+                    expanded={expandedCourseId === course.id}
+                    onToggle={() =>
+                      setExpandedCourseId((current) =>
+                        current === course.id ? null : course.id
+                      )
+                    }
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+
           <section className="mb-8 grid gap-6 lg:grid-cols-5">
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 lg:col-span-3">
               <h2 className="text-xl">Learning trend</h2>
@@ -107,32 +146,86 @@ export function MentorStudentPage() {
               <DistributionChart segments={data.distribution.segments} />
             </div>
           </section>
-
-          <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-            <h2 className="text-xl">Course progress</h2>
-            <ul className="mt-4 divide-y divide-white/8">
-              {data.summary.courses.map((course) => (
-                <li
-                  key={course.id}
-                  className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div>
-                    <p className="font-medium">{course.title}</p>
-                    <p className="text-sm text-[var(--muted)]">
-                      {course.completedLessons}/{course.totalLessons} lessons ·{" "}
-                      {formatMinutes(course.timeSpentSeconds)}
-                    </p>
-                  </div>
-                  <p className="text-sm tabular-nums text-[var(--accent)]">
-                    {course.progressPercent}%
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </section>
         </>
       )}
     </main>
+  );
+}
+
+function CourseDetailCard({
+  course,
+  expanded,
+  onToggle,
+}: {
+  course: MentorCourseDetail;
+  expanded: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full flex-col gap-3 px-4 py-4 text-left transition hover:bg-white/[0.03] sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div className="min-w-0">
+          <p className="text-xs tracking-wide text-[var(--accent)] uppercase">
+            {course.category}
+          </p>
+          <p className="mt-0.5 font-medium">{course.title}</p>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            {course.completedLessons}/{course.totalLessons} completed ·{" "}
+            {course.inProgressLessons} in progress · {course.notStartedLessons}{" "}
+            not started · {formatMinutes(course.timeSpentSeconds)}
+          </p>
+        </div>
+        <div className="w-full sm:w-56">
+          <div className="mb-1 flex justify-between text-xs text-[var(--muted)]">
+            <span>{expanded ? "Hide lessons" : "Show lessons"}</span>
+            <span className="tabular-nums text-[var(--ink)]">
+              {course.progressPercent}%
+            </span>
+          </div>
+          <div className="h-2 overflow-hidden rounded-full bg-white/8">
+            <div
+              className="h-full rounded-full bg-[var(--accent)] transition-all"
+              style={{ width: `${course.progressPercent}%` }}
+            />
+          </div>
+        </div>
+      </button>
+
+      {expanded && (
+        <div className="border-t border-white/8 px-4 py-3">
+          {course.description && (
+            <p className="mb-3 text-sm text-[var(--muted)]">{course.description}</p>
+          )}
+          <ul className="divide-y divide-white/8">
+            {course.lessons.map((lesson) => (
+              <li
+                key={lesson.id}
+                className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="min-w-0">
+                  <p className="text-xs text-[var(--muted)]">
+                    Lesson {lesson.orderIndex}
+                  </p>
+                  <p className="font-medium">{lesson.title}</p>
+                  <p className="text-sm text-[var(--muted)]">
+                    Est. {lesson.durationMinutes} min · Logged{" "}
+                    {formatMinutes(lesson.timeSpentSeconds)}
+                    {lesson.completedAt
+                      ? ` · Done ${new Date(lesson.completedAt).toLocaleDateString()}`
+                      : ""}
+                  </p>
+                </div>
+                <StatusBadge status={lesson.status} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 }
 
